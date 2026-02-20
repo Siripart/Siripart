@@ -7,6 +7,7 @@ import { useState, useRef } from 'react';
 import { summarizeMeetingInvite, MeetingSummary } from './services/ai';
 import { Loader2, Calendar, MapPin, Users, FileText, Copy, Check, ClipboardList, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export default function App() {
   const [inputText, setInputText] = useState('');
@@ -308,6 +309,7 @@ ${summary.agenda.map(item => `- ${item}`).join('\n')}
           </motion.div>
         )}
       </div>
+      <SpeedInsights />
     </div>
   );
 }
