@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import { summarizeMeetingInvite, MeetingSummary } from './services/ai';
 import { Loader2, Calendar, MapPin, Users, FileText, Copy, Check, ClipboardList, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -17,7 +17,7 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -307,6 +307,12 @@ ${summary.agenda.map(item => `- ${item}`).join('\n')}
             </div>
           </motion.div>
         )}
+        {/* Footer Info */}
+        <footer className="pt-8 pb-4 text-center border-t border-slate-200">
+          <p className="text-slate-400 text-xs font-medium">
+            แผนกปฏิบัติงานดิจิทัล ผปด.กดส.ฝสบ.กฟต.1 (511583 นายสิริภาส มีสุข โทร.41-15690)
+          </p>
+        </footer>
       </div>
     </div>
   );

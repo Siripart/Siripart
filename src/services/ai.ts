@@ -1,4 +1,4 @@
-import { GoogleGenAI, SchemaType, Type } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
