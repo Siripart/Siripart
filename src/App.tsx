@@ -5,7 +5,7 @@
 
 import { useState, useRef, ChangeEvent } from 'react';
 import { summarizeMeetingInvite, MeetingSummary } from './services/ai';
-import { Loader2, Calendar, MapPin, Users, FileText, Copy, Check, ClipboardList, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Calendar, MapPin, Users, FileText, Copy, Check, ClipboardList, Upload, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
@@ -44,6 +44,11 @@ export default function App() {
   const clearFile = () => {
     setSelectedFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleBack = () => {
+    setSummary(null);
+    setError(null);
   };
 
   const handleSummarize = async () => {
@@ -105,11 +110,15 @@ ${summary.agenda.map(item => `- ${item}`).join('\n')}
         </header>
 
         {/* Input Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-        >
+        <AnimatePresence mode="wait">
+          {!summary ? (
+            <motion.div 
+              key="input-section"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
+            >
           <div className="p-1 bg-slate-100 border-b border-slate-200 flex justify-between items-center">
             <div className="flex items-center px-4 py-2 text-sm font-medium text-slate-500">
               <FileText className="w-4 h-4 mr-2" />
@@ -202,39 +211,38 @@ ${summary.agenda.map(item => `- ${item}`).join('\n')}
             </div>
           </div>
         </motion.div>
-
-        {/* Error Message */}
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-center"
-          >
-            {error}
-          </motion.div>
-        )}
-
-        {/* Result Section */}
-        {summary && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden"
-          >
-            <div className="p-6 md:p-8 space-y-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-900">{summary.topic}</h2>
-                  <p className="text-slate-500 text-sm mt-1">สรุปข้อมูลสำคัญสำหรับการนัดหมาย</p>
+        ) : (
+            /* Result Section */
+            <motion.div
+              key="result-section"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden"
+            >
+              <div className="p-6 md:p-8 space-y-6">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-start space-x-4">
+                    <button
+                      onClick={handleBack}
+                      className="mt-1 p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                      title="กลับไปแก้ไข"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900">{summary.topic}</h2>
+                      <p className="text-slate-500 text-sm mt-1">สรุปข้อมูลสำคัญสำหรับการนัดหมาย</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleCopy}
+                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    title="คัดลอกข้อมูล"
+                  >
+                    {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                  </button>
                 </div>
-                <button
-                  onClick={handleCopy}
-                  className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                  title="คัดลอกข้อมูล"
-                >
-                  {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                </button>
-              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -305,8 +313,33 @@ ${summary.agenda.map(item => `- ${item}`).join('\n')}
                 </div>
               )}
             </div>
+            
+            <div className="p-6 pt-0 flex justify-center">
+              <button
+                onClick={handleBack}
+                className="inline-flex items-center px-6 py-2 text-slate-500 hover:text-indigo-600 font-medium transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                ย้อนกลับไปสรุปใหม่
+              </button>
+            </div>
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* Error Message */}
+      <AnimatePresence>
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="mt-4 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-center"
+          >
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
         {/* Footer Info */}
         <footer className="pt-8 pb-4 text-center border-t border-slate-200">
           <p className="text-slate-400 text-xs font-medium">
